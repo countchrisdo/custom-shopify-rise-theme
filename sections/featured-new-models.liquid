@@ -1,0 +1,223 @@
+{% comment %}
+  Rise Theme - Featured New Models Section
+  Logic:
+    - Pulls products tagged "new"
+    - If products exist: render grid
+    - If none exist: render fallback message
+{% endcomment %}
+
+
+<!-- Load Rise theme component styles -->
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+
+{%- if section.settings.quick_add != 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'product-form.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+<section id="featured-new-models-{{ section.id }}" class="section featured-new-models color-{{ section.settings.color_scheme }} isolate gradient">
+  <div class="collection section-{{ section.id }}-padding page-width{% if section.settings.full_width %} collection--full-width{% endif %}">
+    
+    <!-- Section Title -->
+    {% if section.settings.title != blank %}
+      <div class="title-wrapper center">
+      <h2 class="collection__title title inline-richtext {{ section.settings.heading_size }}">
+        {{ section.settings.title }}
+      </h2>
+    </div>
+    {% endif %}
+    
+    {% if section.settings.subtitle != blank %}
+      <p class="collection__description rte text-gray-600 mb-10">{{ section.settings.subtitle }}</p>
+    {% endif %}
+
+    {% assign new_collection = collections[section.settings.collection] %}
+    {% if new_collection and new_collection.products_count > 0 %}
+{%- comment -%} Hide arrows if not needed {%- endcomment -%}
+  {% assign total_products = new_collection.products_count %}
+  {% assign columns_desktop = section.settings.columns %}
+  {% assign show_arrows = false %}
+  {% if total_products > columns_desktop %}
+    {% assign show_arrows = true %}
+  {% endif %}
+
+      <slider-component class="slider-mobile-gutter{% if section.settings.full_width %} slider-component-full-width{% endif %}">
+        <ul id="Slider-{{ section.id }}" class="grid product-grid contains-card grid--{{ section.settings.columns }}-col-desktop grid--2-col-tablet-down" role="list">
+          {% for product in new_collection.products limit: section.settings.limit %}
+            <li class="grid__item slider__slide">
+              {% render 'card-product',
+                card_product: product,
+                media_aspect_ratio: '1:1',
+                image_shape: 'rounded-2xl',
+                lazy_load: true,
+                show_secondary_image: false,
+                show_vendor: false,
+                show_rating: false,
+                section_id: section.id,
+                quick_add: section.settings.quick_add
+              %}
+            </li>
+          {% endfor %}
+        </ul>
+        
+<!-- Slider buttons -->
+        {% if show_arrows %}
+        <div class="slider-buttons">
+          <button type="button" class="slider-button slider-button--prev" aria-controls="Slider-{{ section.id }}">
+            <span class="svg-wrapper">{{ 'icon-caret.svg' | inline_asset_content }}</span>
+          </button>
+          <button type="button" class="slider-button slider-button--next" aria-controls="Slider-{{ section.id }}">
+            <span class="svg-wrapper">{{ 'icon-caret.svg' | inline_asset_content }}</span>
+          </button>
+        </div>
+      {% endif %}
+      </slider-component>
+
+      {% if section.settings.show_view_all_link %}
+        <div class="center collection__view-all mt-8">
+          <a href="{{ new_collection.url }}" class="button button--primary">{{ section.settings.view_all_text }}</a>
+        </div>
+      {% endif %}
+    
+    {% else %}
+      <div class="text-center center py-20">
+        <p class="text-xl text-gray-600 mb-6">{{ section.settings.empty_message }}</p>
+        {% if section.settings.cta_text != blank and section.settings.cta_url != blank %}
+          <a href="{{ section.settings.cta_url }}" class="button button--secondary">{{ section.settings.cta_text }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* Product card hover effect */
+  #featured-new-models-{{ section.id }} .product-card img {
+    transition: transform 0.3s ease;
+  }
+  #featured-new-models-{{ section.id }} .product-card:hover img {
+    transform: scale(1.05);
+  }
+{% endstyle %}
+
+
+{% schema %}
+{
+  "name": "Featured: New Models",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "In Stock"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Upcycled comfort for your favorite companions"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        },
+        {
+          "value": "hxl",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "hxxl",
+          "label": "t:sections.all.heading_size.options__5.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "New Models Collection",
+    },
+    {
+      "type": "number",
+      "id": "limit",
+      "label": "Maximum products to show",
+      "default": 6,
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Grid columns",
+      "options": [
+        { "value": "2", "label": "2 columns" },
+        { "value": "3", "label": "3 columns" },
+        { "value": "4", "label": "4 columns" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "richtext",
+      "id": "empty_message",
+      "label": "Empty state message",
+      "default": "<p>New models drop every Tuesday and Thursday.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Optional CTA text",
+      "default": "Click here"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Optional CTA URL"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all link text",
+      "default": "View all new models"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all_link",
+      "label": "Show 'View all' link",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured: New Models",
+      "category": "Home page"
+    }
+  ]
+}
+{% endschema %}
+

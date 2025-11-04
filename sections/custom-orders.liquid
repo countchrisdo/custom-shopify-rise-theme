@@ -1,0 +1,93 @@
+{% comment %} 
+This is a custom page creted by Chris Burwell
+Custom Orders landing + form + deposit CTA.
+Replace FAQ/Sold/Inventory URLs as needed.
+Replace VARIANT_ID with the deposit product variant ID. 
+{% endcomment %}
+
+<section class="custom-orders max-w-3xl mx-auto px-4 py-12">
+{% if form and form.posted_successfully? %}
+    <div class="bg-green-50 border border-green-200 p-4 rounded mb-6">
+      <p class="mb-2"><strong>Thank you.</strong> Your custom request was received.</p>
+      <p class="mb-4">To proceed, pay the $100 deposit. You will receive an order confirmation by email.</p>
+      <a
+        class="inline-block bg-black text-white px-5 py-3 rounded"
+        href="/cart/add?id=VARIANT_ID&quantity=1&return_to=/checkout"
+      >Pay $100 Deposit</a>
+    </div>
+  {% endif %}
+
+
+  {% form 'contact', id: 'custom-order-form' %}
+    {% if form.errors %}
+      <div class="bg-red-50 border border-red-200 p-4 rounded mb-6">
+        <p>Please correct the errors below.</p>
+      </div>
+    {% endif %}
+
+    <input type="hidden" name="contact[Subject]" value="Custom Order Request" />
+
+    <div class="grid gap-5">
+      <div>
+        <label for="co_name" class="block mb-1">Your name</label>
+        <input id="co_name" class="w-full border p-3" type="text" name="contact[Name]" required>
+      </div>
+
+      <div>
+        <label for="co_email" class="block mb-1">Email</label>
+        <input id="co_email" class="w-full border p-3" type="email" name="contact[email]" required>
+      </div>
+
+      <div>
+        <label for="co_cityzip" class="block mb-1">City and ZIP code</label>
+        <input id="co_cityzip" class="w-full border p-3" type="text" name="contact[City and ZIP]" required>
+      </div>
+
+      <div>
+        <label for="co_pet" class="block mb-1">Pet type, size, and any special needs</label>
+        <textarea id="co_pet" class="w-full border p-3" name="contact[Pet details]" rows="3" required></textarea>
+      </div>
+
+      <div>
+        <label for="co_multi" class="block mb-1">Multiple pet details and interaction notes</label>
+        <textarea id="co_multi" class="w-full border p-3" name="contact[Multiple pets]" rows="3"></textarea>
+      </div>
+
+      <div>
+        <label for="co_inspo" class="block mb-1">
+          Inspiration from sold inventory (<a href="/collections/sold">view Sold</a>)
+        </label>
+        <textarea id="co_inspo" class="w-full border p-3" name="contact[Inspiration from Sold]" rows="3" placeholder="Paste product titles or URLs"></textarea>
+      </div>
+
+      <div>
+        <label for="co_y2b" class="block mb-1">
+          Selection from yet-to-be-refurbished inventory (<a href="/collections/yet-to-be-refurbished">view items</a>)
+        </label>
+        <textarea id="co_y2b" class="w-full border p-3" name="contact[Yet-to-be-refurbished selection]" rows="3" placeholder="Paste product titles or URLs"></textarea>
+      </div>
+
+      <div>
+        <label for="co_space" class="block mb-1">Space limitations and measurements</label>
+        <textarea id="co_space" class="w-full border p-3" name="contact[Space limitations]" rows="3"></textarea>
+      </div>
+
+      <div>
+        <label for="co_decor" class="block mb-1">Home décor details to match</label>
+        <textarea id="co_decor" class="w-full border p-3" name="contact[Home decor details]" rows="3"></textarea>
+      </div>
+
+      <div>
+        <label for="co_personalization" class="block mb-1">Personalization options (photos, engraving, etc.)</label>
+        <textarea id="co_personalization" class="w-full border p-3" name="contact[Personalization]" rows="3"></textarea>
+      </div>
+
+      <div class="hidden">
+        <label>Do not fill this in</label>
+        <input type="text" name="contact[honeypot]" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="bg-black text-white px-5 py-3 rounded">Submit custom request</button>
+    </div>
+  {% endform %}
+</section>
